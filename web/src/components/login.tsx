@@ -1,12 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react';
 
 const Login = () => {
    const [email, setEmail] = useState('');
    const [pass, setPass] = useState('');
 
-   const HandleSubmit= (e: any) => {
-     console.log(email);
-   }
   return (
     <>
         <form>

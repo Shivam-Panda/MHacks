@@ -1,21 +1,23 @@
+import { Pages } from '../App';
 import './nav.css';
-import { Outlet, Link } from "react-router-dom";
-const nav = () => {
+
+interface Props {
+  setPage: React.Dispatch<React.SetStateAction<Pages>>
+}
+
+const nav = (props: Props) => {
   return (
-    <>
     <div className='Nav'>
-    <ul id='nav'>  
-      <li>
-        <a id="title" href="/home">OpenDesk</a>
-      </li>
-      <li>
-        <a id="interface" href="/login">Login</a>
-      </li>
-    </ul>
+      <ul id='nav'>  
+        <li>
+          <p id="title" onClick={() => props.setPage(Pages.HOME)}>OpenDesk</p>
+        </li>
+        <li>
+          <p id="title" onClick={() => props.setPage(Pages.LOGIN)}>Login</p>
+        </li>
+      </ul>
     </div>
-    <Outlet />
-    </>
   )
 }
 
-export default nav
+export default nav;
