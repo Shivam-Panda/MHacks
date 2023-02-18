@@ -1,0 +1,25 @@
+.Nav{
+    background-color: #282c34;
+    overflow: hidden;
+    min-height: 15vh;
+    min-width: 100vh;
+  }
+  #nav{
+    list-style: none;
+    display: inline;
+  }
+  #nav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 5vh;
+  }
+  #nav a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  .li{
+    float: left;
+  }
