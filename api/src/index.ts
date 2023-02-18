@@ -3,7 +3,8 @@ import express from "express";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
-import { MovieResolver } from "./resolvers/MovieResolver";
+import { AuthenticationResolver } from "./resolvers/Authentication";
+import { OperationResolver } from "./resolvers/OperationResolver";
 
 (async () => {
   const app = express();
@@ -12,7 +13,7 @@ import { MovieResolver } from "./resolvers/MovieResolver";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [MovieResolver]
+      resolvers: [OperationResolver, AuthenticationResolver]
     }),
     context: ({ req, res }) => ({ req, res })
   });

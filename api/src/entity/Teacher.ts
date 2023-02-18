@@ -12,9 +12,9 @@ export class Teacher extends BaseEntity {
     @Column()
     name: string;
 
-    @Field()
-    @Column()
-    password: string;
+    @Field(() => Int)
+    @Column("int")
+    password: number;
 
     @Field(() => Int)
     @Column("int")

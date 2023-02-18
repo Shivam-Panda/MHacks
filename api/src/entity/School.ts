@@ -20,11 +20,11 @@ export class School extends BaseEntity {
     @Column()
     password: string;
 
-    @Field(() => [Int])
-    @Column("simple-array")
-    teachers: [number];
+    @Field(() => [Int]!)
+    @Column("simple-array", { nullable: true })
+    teachers?: [number];
 
-    @Field(() => [Int])
-    @Column("simple-array")
-    students: [number];
+    @Field(() => [Int]!)
+    @Column("simple-array", { nullable: true })
+    students?: [number];
 }
