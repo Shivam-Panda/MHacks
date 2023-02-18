@@ -1,4 +1,5 @@
-import { Arg, Field, InputType, Int, Mutation, Resolver } from "type-graphql";
+import { createHash } from "crypto";
+import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
 import { Assignment } from "../entity/Assignment";
 import { A_Submission } from "../entity/A_Submission";
 import { Class } from "../entity/Class";
@@ -15,8 +16,8 @@ class CreateSchoolInput {
     @Field()
     name: string
 
-    @Field()
-    username: string
+    @Field(() => Int)
+    username: number;
 
     @Field()
     password: string
@@ -33,8 +34,8 @@ class CreateTeacherInput {
     @Field(() => Int)
     userid: number;
 
-    @Field(() => Int)
-    password: number;
+    @Field()
+    password: string;
 }
 
 @InputType()
@@ -48,11 +49,20 @@ class CreateStudentInput {
     @Field(() => Int)
     userid: number;
 
-    @Field(() => Int)
-    password: number;
+    @Field()
+    password: string;
 
     @Field(() => Int)
     grad: number;
+}
+
+@InputType()
+class LoginInput {
+    @Field(() => Int)
+    userid: number;
+
+    @Field()
+    password: string;
 }
 
 @Resolver()
@@ -63,8 +73,8 @@ export class OperationResolver {
     ) {
         const s = await School.create({
             name: input.name,
-            username: input.username,
-            password: input.password,
+            userid: input.username,
+            password: createHash('sha256').update(input.password).digest('base64'),
             teachers: [],
             students: []
         }).save()
@@ -79,7 +89,7 @@ export class OperationResolver {
         const t = await Teacher.create({
             name: input.name,
             userid: input.userid,
-            password: input.password,
+            password: createHash('sha256').update(input.password).digest('base64'),
             classes: []
         }).save()
         if(t) {
@@ -106,7 +116,7 @@ export class OperationResolver {
     ) {
         const s = await Student.create({
             classes: [],
-            password: input.password,
+            password: createHash('sha256').update(input.password).digest('base64'),
             userid: input.userid,
             name: input.name,
             grad: input.grad
@@ -264,6 +274,7 @@ export class OperationResolver {
         return true;
     }
 
+    // Dev
     @Mutation(() => Boolean)
     async clear() {
         await A_Submission.delete({});
@@ -276,5 +287,22 @@ export class OperationResolver {
         await School.delete({});
         await Student.delete({});
         await Teacher.delete({});
+    }
+
+    @Query(() => String!, { nullable: true })
+    async login(
+        @Arg("input", () => LoginInput) input: LoginInput
+    ) {
+        let s: Student | Teacher | School | undefined  = await Student.findOne({ userid: input.userid });
+        if(s == undefined) {s = await Teacher.findOne({ userid: input.userid })}
+        if(s == undefined) {s = await School.findOne({ userid: input.userid })}
+        if(s == undefined) {
+            return null;
+        }
+        if(s.password == createHash('sha256').update(input.password).digest('base64')) {
+            return s.password;
+        } else {
+            return null;
+        }
     }
 }

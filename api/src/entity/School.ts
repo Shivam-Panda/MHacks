@@ -12,9 +12,9 @@ export class School extends BaseEntity {
     @Column()
     name: string;
 
-    @Field()
-    @Column()
-    username: string;
+    @Field(() => Int)
+    @Column("int")
+    userid: number;
 
     @Field()
     @Column()
