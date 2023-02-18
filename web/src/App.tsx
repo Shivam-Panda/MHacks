@@ -24,7 +24,6 @@ const App = (): JSX.Element => {
       default:
         break;
     }
-    console.log(page);  
   }, [page])
 
   return (
