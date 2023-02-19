@@ -196,4 +196,107 @@ export class TeacherResolver {
             return false;
         }
     }
+    
+    @Mutation(() => Boolean)
+    async deletePost(
+        @Arg("id", () => Int) id: number
+    ) {
+        const p = await Post.findOne({ id })
+        if(p) {
+            const c = await Class.findOne({ id: p.classID })
+            if(c) {
+                let posts: number[] | [number] = c.posts; 
+                posts = posts.filter((val, _) => {
+                    return (val !== id)
+                })
+                await Class.update({
+                    id: p.classID
+                }, {
+                    posts
+                });
+                await Post.delete({ id })
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Mutation(() => Boolean)
+    async deleteAssignment(
+        @Arg("id", () => Int) id: number
+    ) {
+        const a = await Assignment.findOne({ id });
+        const c = await Class.findOne({ id: a?.classID })
+        if(a !== undefined || c !== undefined) {
+            let submissions = a?.submissions;
+            if(submissions) {
+                for(let i = 0; i < submissions.length; i++) {
+                    await A_Submission.delete({ id: submissions[i] })
+                }
+            }
+            let assignments: any = c?.assignments;
+            assignments = assignments?.filter((val: any) => (val !== id))
+            await Class.update({
+                id: c?.id
+            }, {
+                assignments
+            });
+            await Assignment.delete({ id })
+            return true;
+        }
+        return false;
+    }
+
+    @Mutation(() => Boolean)
+    async deleteQuiz(
+        @Arg("id", () => Int) id: number
+    ) {
+        const q = await Quiz.findOne({ id })
+        const c = await Class.findOne({ id: q?.classID })
+        if(q == undefined || c == undefined) return false;
+        else {
+            let submissions = q?.submissions;
+            if(submissions) {
+                for(let i = 0; i < submissions.length; i++) { 
+                    await Q_Submission.delete({ id: submissions[i] })
+                }
+            }
+            let quizzes: any = c.quizzes;
+            quizzes = quizzes.filter((val: any) => (val !== id))
+            await Class.update({
+                id: c.id
+            }, {
+                quizzes
+            })
+            await Quiz.delete({ id });
+            return true;
+        }
+    }
+
+    @Mutation(() => Boolean)
+    async gradeQuiz(
+        @Arg("id", () => Int) id: number
+    ) {
+        const submission = await Q_Submission.findOne({ id })
+        if(submission) {
+            let count = 0
+            let questions = submission.questions;
+            let answers = submission.answers;
+            if(answers.length == questions.length) {
+                for(let i = 0; i < questions.length; i++) {
+                    const q = await Question.findOne({ id: questions[i] })
+                    if(q) {
+                        if(q.answer == answers[i]) count++;
+                    }
+                }
+                await Q_Submission.update({ id }, {
+                    grade: (count/questions.length)
+                })
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 }
