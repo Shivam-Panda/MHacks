@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import '../components/component.css'
+import './component.css';
 const Studentview = () => {
   return (
     <div>
@@ -13,13 +14,15 @@ const Studentview = () => {
       autoComplete="off"
     />
     <div>
-    
+    <div className='Text_Entry'>
     <TextField
           required
           id="outlined-required"
           label="Submit Assignment"
-          defaultValue="Start Typing Here"
+          defaultValue=""
         />
+    <Button variant="outlined">Submit</Button>
+    </div>
     </div>
     </div>
   )

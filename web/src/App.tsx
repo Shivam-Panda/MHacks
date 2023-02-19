@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
-import Home from "./components/home";
-import Login from "./components/login";
-import Nav from "./components/nav";
-=======
+
 import { useEffect, useState } from 'react';
 import Home from './components/home';
 import Login from './components/login';
 import Nav from './components/nav';
 import Studentview from './components/studentview_assignment';
-// import Home from './components/home';
->>>>>>> f0b55a25943e9267d78b9e46ae0de12f9e486406
 
 export enum Pages {
   HOME,
@@ -39,7 +32,6 @@ const App = (): JSX.Element => {
     <Nav setPage={setPage} />
     <Studentview />
     {display}
-    Hello
     </div>
   );
 }

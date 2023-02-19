@@ -8,3 +8,7 @@
     width: 100vh;
     margin-top: 5vh;
 }
+.Text_Entry{
+    margin-top: 5vh;
+    display: flex;
+}
