@@ -89,7 +89,8 @@ export class OperationResolver {
         const t = await Teacher.create({
             name: input.name,
             userid: input.userid,
-            password: createHash('sha256').update(input.password).digest('base64')
+            password: createHash('sha256').update(input.password).digest('base64'),
+            schoolID: input.school
         }).save()
         if(t) {
             const s = await School.findOne({ id: input.school })
@@ -118,7 +119,8 @@ export class OperationResolver {
             password: createHash('sha256').update(input.password).digest('base64'),
             userid: input.userid,
             name: input.name,
-            grad: input.grad
+            grad: input.grad,
+            schoolID: input.school
         }).save()
         if(s) {
             const school = await School.findOne({ id: input.school })
@@ -168,14 +170,25 @@ export class OperationResolver {
         @Arg("id", () => Int) id: number
     ) {
         const a = await Assignment.findOne({ id });
-        let submissions = a?.submissions;
-        if(submissions) {
-            for(let i = 0; i < submissions.length; i++) {
-                await A_Submission.delete({ id: submissions[i] })
+        const c = await Class.findOne({ id: a?.classID })
+        if(a !== undefined || c !== undefined) {
+            let submissions = a?.submissions;
+            if(submissions) {
+                for(let i = 0; i < submissions.length; i++) {
+                    await A_Submission.delete({ id: submissions[i] })
+                }
             }
+            let assignments: any = c?.assignments;
+            assignments = assignments?.filter((val: any) => (val !== id))
+            await Class.update({
+                id: c?.id
+            }, {
+                assignments
+            });
+            await Assignment.delete({ id })
+            return true;
         }
-        await Assignment.delete({ id })
-        return true;
+        return false;
     }
 
     @Mutation(() => Boolean)
@@ -183,13 +196,25 @@ export class OperationResolver {
         @Arg("id", () => Int) id: number
     ) {
         const q = await Quiz.findOne({ id })
-        let submissions = q?.submissions;
-        if(submissions) {
-            for(let i = 0; i < submissions.length; i++) { 
-                await Q_Submission.delete({ id: submissions[i] })
+        const c = await Class.findOne({ id: q?.classID })
+        if(q == undefined || c == undefined) return false;
+        else {
+            let submissions = q?.submissions;
+            if(submissions) {
+                for(let i = 0; i < submissions.length; i++) { 
+                    await Q_Submission.delete({ id: submissions[i] })
+                }
             }
+            let quizzes: any = c.quizzes;
+            quizzes = quizzes.filter((val: any) => (val !== id))
+            await Class.update({
+                id: c.id
+            }, {
+                quizzes
+            })
+            await Quiz.delete({ id });
+            return true;
         }
-        await Quiz.delete({ id })
     }
 
     @Mutation(() => Boolean)

@@ -20,6 +20,10 @@ export class Student extends BaseEntity {
     @Column("int")
     userid: number;
 
+    @Field(() => Int)
+    @Column("int")
+    schoolID: number;
+
     @Field()
     @Column()
     password: string;

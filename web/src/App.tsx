@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import Home from './components/home';
-import Login from './components/login';
-import Nav from './components/nav';
-// import Home from './components/home';
+import { useEffect, useState } from "react";
+import Home from "./components/home";
+import Login from "./components/login";
+import Nav from "./components/nav";
 
 export enum Pages {
   HOME,
@@ -30,6 +29,7 @@ const App = (): JSX.Element => {
     <div>
     <Nav setPage={setPage} />
     {display}
+    Hello
     </div>
   );
 }

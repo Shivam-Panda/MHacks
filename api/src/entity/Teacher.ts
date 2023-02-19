@@ -20,6 +20,10 @@ export class Teacher extends BaseEntity {
     @Column("int")
     userid: number;
 
+    @Field(() => Int)
+    @Column("int")
+    schoolID: number;
+
     @Field(() => Int!, { nullable: true })
     @Column("int", { nullable: true })
     classID: number;
