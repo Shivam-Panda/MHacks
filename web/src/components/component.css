@@ -2,3 +2,8 @@
     color: black;
     size: 15vh;
 }
+#outlined-required{
+    float: inline-end;
+    min-height: 20vh;
+    width: 100vh;
+}
