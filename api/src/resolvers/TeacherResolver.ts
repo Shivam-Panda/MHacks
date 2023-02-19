@@ -1,6 +1,6 @@
 import { A_Submission } from "src/entity/A_Submission";
 import { Q_Submission } from "src/entity/Q_Submission";
-import { Arg, Field, InputType, Int, Mutation, Resolver } from "type-graphql";
+import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
 import { Assignment } from "../entity/Assignment";
 import { Class } from "../entity/Class";
 import { Post } from "../entity/Post";
@@ -296,6 +296,32 @@ export class TeacherResolver {
             } else {
                 return false;
             }
+        }
+        return false;
+    }
+
+    @Query(() => [A_Submission], { nullable: true })
+    async assignmentSubmission(@Arg("id", () => Int) id: number) {
+        const s = await Assignment.findOne({ id })
+        if(s) {
+            let submissions = []
+            for(let i = 0; i < s.submissions.length; i++) {
+                submissions.push(await A_Submission.findOne({ id: s.submissions[i] }))
+            }
+            return submissions;
+        }
+        return false;
+    }
+
+    @Query(() => [Q_Submission], { nullable: true })
+    async quizSubmissions(@Arg("id", () => Int) id: number) {
+        const q = await Quiz.findOne({ id })
+        if(q) {
+            let quizzes = []
+            for(let i = 0; i < q.submissions.length; i++) {
+                quizzes.push(await Q_Submission.findOne({ id: q.submissions[i] }))
+            }
+            return quizzes;
         }
         return false;
     }

@@ -16,7 +16,7 @@ export class A_Submission extends BaseEntity {
     @Column("int")
     studentID: number;
 
-    @Field(() => Int)
-    @Column("float")
-    grade: number;
+    @Field(() => Int, { nullable: true })
+    @Column("float", { nullable: true })
+    grade?: number;
 }
