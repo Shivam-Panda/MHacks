@@ -3,6 +3,7 @@
     overflow: hidden;
     min-height: 15vh;
     min-width: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   #nav{
     list-style: none;
