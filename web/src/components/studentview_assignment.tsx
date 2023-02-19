@@ -1,7 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import { text } from 'stream/consumers';
 import { useEffect, useState } from "react";
 import './component.css';
 
@@ -13,7 +11,12 @@ import './component.css';
 //const openai = new OpenAIApi(configuration);
 //const response = await openai.listEngines();
 
-
+useEffect(()=> {
+  document.addEventListener('keydown', detectKeyDown, true)
+})
+const detectKeyDown = (ev: any) => {
+  console.log("Clicked Key:", ev.key)
+}
 const Studentview = () => {
   const [txt, setEmail] = useState('');
   const [state, setState] = useState('');
@@ -24,13 +27,7 @@ const Studentview = () => {
     // changing the state to the name of the key
   // which is pressed
   setState(event.key);
-  };
-  useEffect(()=> {
-    document.addEventListener('keydown', detectKeyDown, true)
-  })
-  const detectKeyDown = (ev: any) => {
-    console.log("Clicked Key:", ev.key)
-  }
+};
   return (
     <>
      <Box

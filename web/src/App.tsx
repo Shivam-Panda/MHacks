@@ -37,3 +37,21 @@ const App = (): JSX.Element => {
 }
 
 export default App;
+      case Pages.LOGIN:
+        setDisplay(<Login />)
+        break;
+      default:
+        break;
+    }
+  }, [page])
+
+  return (
+    <div>
+    <Nav setPage={setPage} />
+    <Studentview />
+    {display}
+    </div>
+  );
+}
+
+export default App;
