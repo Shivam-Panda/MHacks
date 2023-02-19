@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, Float, Int, ObjectType } from "type-graphql";
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @ObjectType()
@@ -16,7 +16,7 @@ export class A_Submission extends BaseEntity {
     @Column("int")
     studentID: number;
 
-    @Field(() => Int, { nullable: true })
+    @Field(() => Float, { nullable: true })
     @Column("float", { nullable: true })
     grade?: number;
 }

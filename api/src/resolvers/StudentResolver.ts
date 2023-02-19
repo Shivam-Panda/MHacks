@@ -1,43 +1,37 @@
-import { Assignment } from "src/entity/Assignment";
-import { A_Submission } from "src/entity/A_Submission";
-import { Quiz } from "src/entity/Quiz";
-import { Q_Submission } from "src/entity/Q_Submission";
-import { Student } from "src/entity/Student";
-import { Arg, Field, InputType, Int, Mutation, Resolver } from "type-graphql";
+import { IsArray } from "class-validator";
+import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
+import { Assignment } from "../entity/Assignment";
+import { A_Submission } from "../entity/A_Submission";
+import { Quiz } from "../entity/Quiz";
+import { Q_Submission } from "../entity/Q_Submission";
+import { Student } from "../entity/Student";
 
 @InputType()
-class ASubmissionInput {
-    @Field()
-    body: string;
-
-    @Field()
+class CreateQSubmissionInput {
+    @Field(() => String)
     token: string;
-
-    @Field(() => Int)
-    assignmentId: number
-}
-
-@InputType()
-class QSubmissionInput {
-    @Field()
-    token: string;
-
-    @Field(() => [String])
-    answers: [string];
 
     @Field(() => Int)
     quizID: number;
+
+    @IsArray()
+    @Field(() => [String])
+    answers: string[]
 }
 
 @Resolver()
 export class StudentResolver {
     @Mutation(() => Boolean)
-    async createASubmission(@Arg("input", () => ASubmissionInput) input: ASubmissionInput) {
-        const student = await Student.findOne({ password: input.token })
-        const assignment = await Assignment.findOne({ id: input.assignmentId })
+    async createASubmission(
+        @Arg("token", () => String) token: string,
+        @Arg("assignment", () => Int) assignmentId: number,
+        @Arg("body", () => String) body: string
+    ) {
+        const student = await Student.findOne({ password: token })
+        const assignment = await Assignment.findOne({ id: assignmentId })
         if(student && assignment) {
             const submission = await A_Submission.create({
-                body: input.body,
+                body: body,
                 studentID: student.id
             }).save()
             let submissions = assignment.submissions;
@@ -51,7 +45,9 @@ export class StudentResolver {
     }
 
     @Mutation(() => Boolean)
-    async createQSubmission(@Arg("input", () => QSubmissionInput) input: QSubmissionInput) {
+    async createQSubmission(
+        @Arg("input", () => CreateQSubmissionInput) input: CreateQSubmissionInput
+    ) {
         const student = await Student.findOne({ password: input.token })
         const quiz = await Quiz.findOne({ id: input.quizID })
         if(student && quiz) {
@@ -66,5 +62,10 @@ export class StudentResolver {
             return true; 
         }
         return false;
+    }
+
+    @Query(() => [Student])
+    async allStudents() {
+        return await Student.find({})
     }
 }

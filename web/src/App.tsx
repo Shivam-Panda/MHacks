@@ -4,7 +4,6 @@ import Login from './components/login';
 import Nav from './components/nav';
 import Studentview from './components/studentview_assignment';
 
-
 export enum Pages {
   HOME,
   LOGIN,

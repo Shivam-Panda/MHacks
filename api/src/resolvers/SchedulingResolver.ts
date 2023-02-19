@@ -1,4 +1,4 @@
-import { Arg, Mutation, Resolver } from "type-graphql";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Class } from "../entity/Class";
 import { School } from "../entity/School";
 import { Teacher } from "../entity/Teacher";
@@ -32,20 +32,23 @@ export class SchedulingResolver {
             }
             for(let i = 0; i < students.length; i++) {
                 const c = classes[i % teachers.length];
-                let students = c.students;
-                if(students == undefined) {
-                    return false;
-                }
-                students.push(students[i])
+                let cs = c.students;
+                cs.push(students[i])
                 await Class.update({
                     id: c.id
                 }, {
-                    students
+                    students: cs
                 })
             }
             return true; 
         } else {
             return false;
         }
+    }
+
+    @Query(() => [Class]!, { nullable: true })
+    async allClasses() {
+        const c = await Class.find({})
+        return c;
     }
 }

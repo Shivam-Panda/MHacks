@@ -14,7 +14,7 @@ export class Student extends BaseEntity {
 
     @Field(() => [Int])
     @Column("simple-array")
-    classes: [number];
+    classes: number[];
 
     @Field(() => Int)
     @Column("int")

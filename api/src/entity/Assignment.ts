@@ -22,7 +22,7 @@ export class Assignment extends BaseEntity {
 
     @Field(() => [Int])
     @Column("simple-array")
-    submissions: [number];
+    submissions: number[];
 
     @Field(() => Int)
     @Column("int")

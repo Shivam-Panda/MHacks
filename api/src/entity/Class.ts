@@ -14,17 +14,17 @@ export class Class extends BaseEntity {
 
     @Field(() => [Int])
     @Column('simple-array')
-    posts: [number];
+    posts: number[];
 
     @Field(() => [Int])
     @Column('simple-array')
-    assignments: [number];
+    assignments: number[];
 
     @Field(() => [Int])
     @Column('simple-array')
-    students: [number];
+    students: number[];
 
     @Field(() => [Int])
     @Column('simple-array')
-    quizzes: [number];
+    quizzes: number[];
 }

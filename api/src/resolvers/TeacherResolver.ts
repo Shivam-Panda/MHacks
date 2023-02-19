@@ -1,156 +1,152 @@
-import { A_Submission } from "src/entity/A_Submission";
-import { Q_Submission } from "src/entity/Q_Submission";
-import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
+import { IsArray, IsOptional } from "class-validator";
+import { Arg, Field, Float, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
 import { Assignment } from "../entity/Assignment";
+import { A_Submission } from "../entity/A_Submission";
 import { Class } from "../entity/Class";
 import { Post } from "../entity/Post";
 import { Question } from '../entity/Question';
 import { Quiz } from "../entity/Quiz";
+import { Q_Submission } from "../entity/Q_Submission";
 import { Teacher } from "../entity/Teacher";
 
 @InputType()
-class CreatePostInput {
-    @Field()
-    token: string;
-
-    @Field(() => Int)
-    classID: number
-
-    @Field()
-    title: string;
-
-    @Field()
-    body: string;
-}
-
-@InputType()
-class CreateAssignmentInput {
-    @Field()
-    token: string;
-
-    @Field(() => Int)
-    classID: number;
-
-    @Field()
-    title: string;
-
-    @Field()
-    body: string;
-
-    @Field()
-    due: string;
-}
-
-@InputType()
 class CreateQuizInput {
-    @Field()
-    token: string;
-
-    @Field()
+    @Field(() => String)
     title: string;
 
-    @Field()
+    @Field(() => String)
     body: string;
 
-    @Field(() => Int)
-    classID: number;
-
+    @IsArray()
     @Field(() => [Int])
-    questions: [number]
+    questions: number[]
+
+    @Field(() => String)
+    token: string;
 }
 
 @InputType()
 class CreateQuestionInput {
-    @Field()
-    token: string;
-
-    @Field()
-    answer: string;
-
-    @Field()
+    @Field(() => String)
     text: string;
 
-    @Field(() => [String]!)
-    choices?: [string]
-}
+    @Field(() => String)
+    answer: string;
 
-@InputType()
-class GradeAssignmentInput {
-    @Field()
+    @IsArray()
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    choices: string[] | undefined
+
+    @Field(() => String)
     token: string;
-
-    @Field(() => Int)
-    assignmentID: number
-
-    @Field(() => Int)
-    grade: number
-}
-
-@InputType()
-class QuizInput {
-    @Field()
-    token: string;
-
-    @Field(() => Int)// hey bb, how you doin?
-    submissionID: number;
-
-    @Field(() => Int)
-    grade: number;
 }
 
 @Resolver()
 export class TeacherResolver {
     @Mutation(() => Boolean)
-    async createPost(@Arg("input", () => CreatePostInput) input: CreatePostInput) {
-        const teacher = await Teacher.findOne({ password: input.token })
-        const c = await Class.findOne({ id: input.classID })
+    async createPost(
+        @Arg("token", () => String) token: string,
+        @Arg("title", () => String) title: string,
+        @Arg("body", () => String) body: string
+    ) {
+        const teacher = await Teacher.findOne({ password: token })
+        const c = await Class.findOne({ id: teacher?.classID })
         if(teacher && c) {
-            await Post.create({
-                classID: input.classID,
-                title: input.title,
-                body: input.body
+            let posts = await c.posts;
+            const p = await Post.create({
+                classID: c.id,
+                title: title,
+                body: body
             }).save()
+            posts.push(p.id)
+            await Class.update({ id: c.id }, { posts })
             return true;
         }
         return false;
     }
 
     @Mutation(() => Boolean)
-    async createAssignment(@Arg("input", () => CreateAssignmentInput) input: CreateAssignmentInput) {
-        const teacher = await Teacher.findOne({ password: input.token })
-        const c = await Class.findOne({ id: input.classID })
+    async createAssignment(
+        @Arg("token", () => String) token: string,
+        @Arg("title", () => String) title: string,
+        @Arg("due", () => String) due: string,
+        @Arg("body", () => String) body: string
+    ) {
+        const teacher = await Teacher.findOne({ password: token })
+        const c = await Class.findOne({ id: teacher?.classID })
         if(teacher && c) {
-            await Assignment.create({
-                classID: input.classID,
-                title: input.title,
-                body: input.body,
+            let assignments = c.assignments;
+            const a = await Assignment.create({
+                classID: c.id,
+                title: title,
+                body: body,
                 submissions: [],
-                due: input.due
+                due: due
             }).save()
+            assignments.push(a.id)
+            await Class.update({ id: c.id }, { assignments })
             return true;
         }
         return false;
     }
 
     @Mutation(() => Boolean)
-    async createQuiz(@Arg("input", () => CreateQuizInput) input: CreateQuizInput) {
+    async deleteClass(
+        @Arg("id", () => Int) id: number
+    ) {
+        let cs = await Class.findOne({ id })
+        const posts = cs?.posts;
+        const assignments = cs?.assignments;
+        const quizzes = cs?.quizzes;
+        if(posts && assignments && quizzes) {
+            for(let k = 0; k < posts.length; k++) {
+                await Post.delete({ id: posts[k] })
+            }
+            for(let k = 0; k < assignments.length; k++) {
+                await Assignment.delete({ id: assignments[k] })
+            }
+            for(let k = 0; k < quizzes.length; k++) {
+                let q = await Quiz.findOne({ id: quizzes[k] })
+                let questions = q?.questions;
+                if(questions) {
+                    for(let j = 0; j < questions.length; j++) {
+                        await Question.delete({ id: questions[j] })
+                    }
+                }
+                await Quiz.delete({ id: quizzes[k] })
+            }
+        }
+        await Class.delete({ id })
+        return true;
+    }
+
+    @Mutation(() => Boolean)
+    async createQuiz(
+        @Arg("input", () => CreateQuizInput) input: CreateQuizInput
+    ) {
         const teacher = await Teacher.findOne({ password: input.token })
-        const c = await Class.findOne({ id: input.classID })
+        const c = await Class.findOne({ id: teacher?.classID })
         if(teacher && c) {
-            await Quiz.create({
-                classID: input.classID,
+            let quizzes = c.quizzes;
+            const q = await Quiz.create({
+                classID: c.id,
                 title: input.title,
                 body: input.body,
                 submissions: [],
                 questions: input.questions
             }).save()
+            quizzes.push(q.id)
+            await Class.update({ id: c.id }, { quizzes })
             return true;
         }
         return false;
     }
 
     @Mutation(() => Int!, { nullable: true })
-    async createQuestion(@Arg("input", () => CreateQuestionInput) input: CreateQuestionInput) {
+    async createQuestion(
+        @Arg("input", () => CreateQuestionInput) input: CreateQuestionInput
+    ) {
         const teacher = await Teacher.findOne({ password: input.token })
         if(teacher) {
             const q = await Question.create({
@@ -167,14 +163,18 @@ export class TeacherResolver {
     }
 
     @Mutation(() => Boolean, { nullable: true })
-    async gradeAssignment(@Arg("input", () => GradeAssignmentInput) input: GradeAssignmentInput) {
-        const teacher = await Teacher.findOne({ password: input.token });
-        const assignment = await A_Submission.findOne({ id: input.assignmentID })
+    async gradeAssignment(
+        @Arg("token", () => String) token: string,
+        @Arg("submission", () => Int) assignmentID: number,
+        @Arg("grade", () => Float) grade: number
+    ) {
+        const teacher = await Teacher.findOne({ password: token });
+        const assignment = await A_Submission.findOne({ id: assignmentID })
         if(teacher && assignment) {
             await A_Submission.update({
-                id: input.assignmentID
+                id: assignmentID
             }, {
-                grade: input.grade
+                grade: grade
             });
             return true;
         } 
@@ -182,14 +182,18 @@ export class TeacherResolver {
     }
 
     @Mutation(() => Boolean, { nullable: true })
-    async overrideQuiz(@Arg("input", () => QuizInput) input: QuizInput) {
-        const teacher = await Teacher.findOne({ password: input.token })
-        const submission = await Q_Submission.findOne({ id: input.submissionID })
+    async overrideQuiz(
+        @Arg("token", () => String) token: string,
+        @Arg("submission", () => Int) assignmentID: number,
+        @Arg("grade", () => Float) grade: number
+    ) {
+        const teacher = await Teacher.findOne({ password: token })
+        const submission = await Q_Submission.findOne({ id: assignmentID })
         if(teacher && submission) {
             await Q_Submission.update({
-                id: input.submissionID
+                id: submission.id
             }, {
-                grade: input.grade
+                grade: grade
             });
             return true;
         } else {
@@ -283,6 +287,8 @@ export class TeacherResolver {
             let count = 0
             let questions = submission.questions;
             let answers = submission.answers;
+            console.log(questions)
+            console.log(answers)
             if(answers.length == questions.length) {
                 for(let i = 0; i < questions.length; i++) {
                     const q = await Question.findOne({ id: questions[i] })
@@ -291,8 +297,9 @@ export class TeacherResolver {
                     }
                 }
                 await Q_Submission.update({ id }, {
-                    grade: (count/questions.length)
+                    grade: (count/questions.length) * 100
                 })
+                return true;
             } else {
                 return false;
             }
@@ -324,5 +331,11 @@ export class TeacherResolver {
             return quizzes;
         }
         return false;
+    }
+
+    @Query(() => [Teacher], { nullable: true })
+    async allTeachers() {
+        const t = await Teacher.find({})
+        return t;
     }
 }

@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Int, Mutation, Query, Resolver } from "type-graphql";
 import { Assignment } from "../entity/Assignment";
 import { A_Submission } from "../entity/A_Submission";
 import { Class } from "../entity/Class";
@@ -11,94 +11,46 @@ import { School } from "../entity/School";
 import { Student } from '../entity/Student';
 import { Teacher } from "../entity/Teacher";
 
-@InputType()
-class CreateSchoolInput {
-    @Field()
-    name: string
-
-    @Field(() => Int)
-    username: number;
-
-    @Field()
-    password: string
-}
-
-@InputType()
-class CreateTeacherInput {
-    @Field(() => Int)
-    school: number
-
-    @Field()
-    name: string;
-
-    @Field(() => Int)
-    userid: number;
-
-    @Field()
-    password: string;
-}
-
-@InputType()
-class CreateStudentInput {
-    @Field(() => Int)
-    school: number
-    
-    @Field()
-    name: string;
-
-    @Field(() => Int)
-    userid: number;
-
-    @Field()
-    password: string;
-
-    @Field(() => Int)
-    grad: number;
-}
-
-@InputType()
-class LoginInput {
-    @Field(() => Int)
-    userid: number;
-
-    @Field()
-    password: string;
-}
-
 @Resolver()
 export class OperationResolver {
-    @Mutation(() => Boolean) 
+    @Mutation(() => School, { nullable: true }) 
     async createSchool(
-            @Arg("input", () => CreateSchoolInput) input: CreateSchoolInput
+        @Arg("name", () => String) name: string,
+        @Arg("userid", () => Int) userid: number,
+        @Arg("password", () => String) password: string,
     ) {
+        let pass = createHash('SHA256').update(password).digest('base64').toString()
         const s = await School.create({
-            name: input.name,
-            userid: input.username,
-            password: createHash('sha256').update(input.password).digest('base64'),
+            name: name,
+            userid: userid,
+            password: pass,
             teachers: [],
             students: []
         }).save()
-        if(s) return true;
-        else return false;
+        if(s) return s;
+        else return null;
     }
 
     @Mutation(() => Boolean)
     async createTeacher(
-        @Arg("input", () => CreateTeacherInput) input: CreateTeacherInput
+        @Arg("school", () => Int) school: number,
+        @Arg("name", () => String) name: string,
+        @Arg("userid", () => Int) userid: number,
+        @Arg("password", () => String) password: string
     ) {
         const t = await Teacher.create({
-            name: input.name,
-            userid: input.userid,
-            password: createHash('sha256').update(input.password).digest('base64'),
-            schoolID: input.school
+            name: name,
+            userid: userid,
+            password: createHash('SHA256').update(password).digest('base64'),
+            schoolID: school
         }).save()
         if(t) {
-            const s = await School.findOne({ id: input.school })
+            const s = await School.findOne({ id: school })
             if (s) {
                 let teachers = s.teachers;
                 teachers?.push(t.id)
                 await School.update({ 
-                    id: input.school
+                    id: school
                  }, {
                     teachers
                 });
@@ -112,23 +64,27 @@ export class OperationResolver {
 
     @Mutation(() => Boolean)
     async createStudent(
-        @Arg("input", () => CreateStudentInput) input: CreateStudentInput
+        @Arg("name", () => String) name: string,
+        @Arg("userid", () => Int) userid: number,
+        @Arg("grad", () => Int) grad: number,
+        @Arg("school", () => Int) school: number,
+        @Arg("password", () => String) password: string
     ) {
         const s = await Student.create({
             classes: [],
-            password: createHash('sha256').update(input.password).digest('base64'),
-            userid: input.userid,
-            name: input.name,
-            grad: input.grad,
-            schoolID: input.school
+            password: createHash('SHA256').update(password).digest('base64'),
+            userid: userid,
+            name: name,
+            grad: grad,
+            schoolID: school
         }).save()
         if(s) {
-            const school = await School.findOne({ id: input.school })
-            if (school) {
-                let students = school.students;
+            const sc = await School.findOne({ id: school })
+            if (sc) {
+                let students = sc.students;
                 students?.push(s.id);
                 await School.update({
-                    id: input.school
+                    id: school
                 }, {
                     students
                 })
@@ -144,48 +100,40 @@ export class OperationResolver {
     async deleteTeacher(
         @Arg("id", () => Int) id: number
     ) {
-        await Teacher.delete({ id })
-        return true;
+        const t = await Teacher.findOne({ id })
+        if(t) {
+            const school = await School.findOne({ id: t.schoolID })
+            let teachers: any = school?.teachers;
+            if(school && teachers) {
+                teachers = teachers.filter((val: any) => (val != id))
+                await School.update({ id: school.id }, { teachers });
+                await Teacher.delete({ id })
+                return true;
+            }
+        }
+        return false;
     }
 
     @Mutation(() => Boolean)
     async deleteStudent(
         @Arg("id", () => Int) id: number
     ) {
-        await Student.delete({ id })
-        await Q_Submission.delete({ studentID: id })
-        await A_Submission.delete({ studentID: id })
-        return true;
-    }
-
-    @Mutation(() => Boolean)
-    async deleteClass(
-        @Arg("id", () => Int) id: number
-    ) {
-        let cs = await Class.findOne({ id })
-        const posts = cs?.posts;
-        const assignments = cs?.assignments;
-        const quizzes = cs?.quizzes;
-        if(posts && assignments && quizzes) {
-            for(let k = 0; k < posts.length; k++) {
-                await Post.delete({ id: posts[k] })
-            }
-            for(let k = 0; k < assignments.length; k++) {
-                await Assignment.delete({ id: assignments[k] })
-            }
-            for(let k = 0; k < quizzes.length; k++) {
-                let q = await Quiz.findOne({ id: quizzes[k] })
-                let questions = q?.questions;
-                if(questions) {
-                    for(let j = 0; j < questions.length; j++) {
-                        await Question.delete({ id: questions[j] })
-                    }
-                }
-                await Quiz.delete({ id: quizzes[k] })
+        const s = await Student.findOne({ id })
+        if(s) {
+            const school = await School.findOne({ id: s.schoolID })
+            let students: any = school?.students;
+            if(school && students) {
+                students = students.filter((val: any) => (val != id))
+                await School.update({ id: school.id }, {
+                    students
+                });
+                await Student.delete({ id })
+                await Q_Submission.delete({ studentID: id })
+                await A_Submission.delete({ studentID: id })
+                return true;
             }
         }
-        await Class.delete({ id })
-        return true;
+        return false;
     }
 
     @Mutation(() => Boolean)
@@ -249,22 +197,37 @@ export class OperationResolver {
         await School.delete({});
         await Student.delete({});
         await Teacher.delete({});
+        return true;
     }
 
     @Query(() => String!, { nullable: true })
     async login(
-        @Arg("input", () => LoginInput) input: LoginInput
+        @Arg("userid", () => Int) userid: number,
+        @Arg("password", () => String) password: string
     ) {
-        let s: Student | Teacher | School | undefined  = await Student.findOne({ userid: input.userid });
-        if(s == undefined) {s = await Teacher.findOne({ userid: input.userid })}
-        if(s == undefined) {s = await School.findOne({ userid: input.userid })}
+        let s: Student | Teacher | School | undefined  = await Student.findOne({ userid: userid });
+        if(s == undefined) {s = await Teacher.findOne({ userid: userid })}
+        if(s == undefined) {s = await School.findOne({ userid: userid })}
         if(s == undefined) {
             return null;
         }
-        if(s.password == createHash('sha256').update(input.password).digest('base64')) {
+        if(s.password == createHash('sha256').update(password).digest('base64')) {
             return s.password;
         } else {
             return null;
         }
+    }
+
+    @Query(() => School!, { nullable: true })
+    async getSchool(@Arg("id", () => Int) id: number) {
+        const s = await School.findOne({ id })
+        if(s) return s;
+        else return null;
+    }
+    
+    @Query(() => [School]!, { nullable: true })
+    async allSchools() {
+        const s = await School.find({});
+        return(s)
     }
 }

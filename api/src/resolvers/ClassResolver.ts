@@ -1,8 +1,8 @@
-import { Assignment } from "src/entity/Assignment";
-import { Class } from "src/entity/Class";
-import { Post } from "src/entity/Post";
-import { Quiz } from "src/entity/Quiz";
 import { Arg, Int, Query, Resolver } from "type-graphql";
+import { Assignment } from "../entity/Assignment";
+import { Class } from "../entity/Class";
+import { Post } from "../entity/Post";
+import { Quiz } from "../entity/Quiz";
 
 @Resolver()
 export class ClassResolver {

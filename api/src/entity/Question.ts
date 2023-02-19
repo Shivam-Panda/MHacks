@@ -16,7 +16,7 @@ export class Question extends BaseEntity {
     @Column()
     text: string;
 
-    @Field(() => [String]!)
+    @Field(() => [String]!, { nullable: true })
     @Column("simple-array", { nullable: true })
-    choices?: [string];
+    choices?: string[] | null;
 }

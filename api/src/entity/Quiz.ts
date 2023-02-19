@@ -10,11 +10,11 @@ export class Quiz extends BaseEntity {
 
     @Field(() => [Int])
     @Column("simple-array")
-    questions: [number];
+    questions: number[];
 
     @Field(() => [Int])
     @Column("simple-array")
-    submissions: [number];
+    submissions: number[];
 
     @Field()
     @Column()

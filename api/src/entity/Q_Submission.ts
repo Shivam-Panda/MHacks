@@ -12,15 +12,15 @@ export class Q_Submission extends BaseEntity {
     @Column("int")
     studentID: number;
 
-    @Field(() => Float!)
+    @Field(() => Float!, { nullable: true })
     @Column("float", { nullable: true })
     grade?: number;
 
     @Field(() => [Int])
     @Column("simple-array")
-    questions: [number];
+    questions: number[];
 
     @Field(() => [String])
     @Column("simple-array")
-    answers: [string];
+    answers: string[];
 }

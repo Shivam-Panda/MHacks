@@ -1,10 +1,13 @@
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
-import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
+import { ClassResolver } from "./resolvers/ClassResolver";
 import { OperationResolver } from "./resolvers/OperationResolver";
 import { SchedulingResolver } from "./resolvers/SchedulingResolver";
+import { StudentResolver } from "./resolvers/StudentResolver";
+import { SummaryResolver } from "./resolvers/SummaryResolver";
+import { TeacherResolver } from "./resolvers/TeacherResolver";
 
 (async () => {
   const app = express();
@@ -13,14 +16,15 @@ import { SchedulingResolver } from "./resolvers/SchedulingResolver";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [OperationResolver, SchedulingResolver]
+      resolvers: [OperationResolver, SchedulingResolver, ClassResolver, StudentResolver, SummaryResolver, TeacherResolver]
     }),
     context: ({ req, res }) => ({ req, res })
   });
 
+
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
-    console.log("express server started");
+    console.log("http://localhost:4000/graphql");
   });
 })();

@@ -22,9 +22,9 @@ export class School extends BaseEntity {
 
     @Field(() => [Int]!)
     @Column("simple-array", { nullable: true })
-    teachers?: [number];
+    teachers?: number[];
 
     @Field(() => [Int]!)
     @Column("simple-array", { nullable: true })
-    students?: [number];
+    students?: number[];
 }
