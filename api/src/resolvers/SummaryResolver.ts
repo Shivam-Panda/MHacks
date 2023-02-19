@@ -1,9 +1,9 @@
-import { Assignment } from "src/entity/Assignment";
-import { A_Submission } from "src/entity/A_Submission";
-import { Quiz } from "src/entity/Quiz";
-import { Q_Submission } from "src/entity/Q_Submission";
-import { Student } from "src/entity/Student";
 import { Arg, Float, Int, Query, Resolver } from "type-graphql";
+import { Assignment } from "../entity/Assignment";
+import { A_Submission } from "../entity/A_Submission";
+import { Quiz } from "../entity/Quiz";
+import { Q_Submission } from "../entity/Q_Submission";
+import { Student } from "../entity/Student";
 
 @Resolver()
 export class SummaryResolver {
