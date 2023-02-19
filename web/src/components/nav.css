@@ -1,8 +1,8 @@
 .Nav{
-    background-color: #282c34;
+    background-color: #13c4a3;
     overflow: hidden;
     min-height: 15vh;
-    min-width: 100vh;
+    min-width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   #nav{
@@ -11,15 +11,15 @@
   }
   #nav a {
     float: left;
-    color: #f2f2f2;
+    color: #36f1cd;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 5vh;
   }
   #nav a:hover {
-    background-color: #ddd;
-    color: black;
+    background-color: #c0e5c8;
+    color: #32322c;
   }
   .li{
     float: left;

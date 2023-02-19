@@ -37,3 +37,7 @@ const Studentview = () => {
 }
 
 export default Studentview
+
+// api key : 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
+// i would never delete it bb
+// don't worry bb
