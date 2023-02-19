@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Home from './components/home';
 import Login from './components/login';
 import Nav from './components/nav';
+import Studentview from './components/studentview_assignment';
 // import Home from './components/home';
 
 export enum Pages {
@@ -29,6 +30,7 @@ const App = (): JSX.Element => {
   return (
     <div>
     <Nav setPage={setPage} />
+    <Studentview />
     {display}
     </div>
   );
