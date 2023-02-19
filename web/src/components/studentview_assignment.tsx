@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
+import '../components/component.css'
 const Studentview = () => {
   return (
     <div>
@@ -18,7 +18,7 @@ const Studentview = () => {
           required
           id="outlined-required"
           label="Submit Assignment"
-          defaultValue="Hello World"
+          defaultValue="Start Typing Here"
         />
     </div>
     </div>
