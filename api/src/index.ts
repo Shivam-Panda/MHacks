@@ -21,6 +21,7 @@ import { TeacherResolver } from "./resolvers/TeacherResolver";
     schema: await buildSchema({
       resolvers: [OperationResolver, SchedulingResolver, ClassResolver, StudentResolver, SummaryResolver, TeacherResolver]
     }),
+    playground: true,
     context: ({ req, res }) => ({ req, res })
   });
 
