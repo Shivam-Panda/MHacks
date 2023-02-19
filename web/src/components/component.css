@@ -12,3 +12,11 @@
     margin-top: 5vh;
     display: flex;
 }
+#input{
+    border: none;
+    border-bottom: 2px solid #39a0ed;
+}
+#input:focus {
+    border: none;
+    background-color: #c9dae7;
+  }
