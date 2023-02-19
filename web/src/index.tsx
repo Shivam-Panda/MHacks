@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: 'https://m-hacks-52ygysfgr-shivam-panda.vercel.app/graphql',
   cache: new InMemoryCache()
 })
 
