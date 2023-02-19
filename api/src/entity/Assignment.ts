@@ -16,9 +16,9 @@ export class Assignment extends BaseEntity {
     @Column()
     body: string;
 
-    @Field(() => Date)
-    @Column("date")
-    due: any;
+    @Field()
+    @Column()
+    due: string;
 
     @Field(() => [Int])
     @Column("simple-array")
