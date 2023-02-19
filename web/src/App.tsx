@@ -7,7 +7,8 @@ import Studentview from './components/studentview_assignment';
 
 export enum Pages {
   HOME,
-  LOGIN
+  LOGIN,
+  STUDENTVIEW
 }
 
 const App = (): JSX.Element => {
@@ -22,6 +23,9 @@ const App = (): JSX.Element => {
       case Pages.LOGIN:
         setDisplay(<Login />)
         break;
+        case Pages.STUDENTVIEW:
+          setDisplay(<Studentview />)
+          break;
       default:
         break;
     }
@@ -30,25 +34,6 @@ const App = (): JSX.Element => {
   return (
     <div>
     <Nav setPage={setPage} />
-    <Studentview />
-    {display}
-    </div>
-  );
-}
-
-export default App;
-      case Pages.LOGIN:
-        setDisplay(<Login />)
-        break;
-      default:
-        break;
-    }
-  }, [page])
-
-  return (
-    <div>
-    <Nav setPage={setPage} />
-    <Studentview />
     {display}
     </div>
   );
