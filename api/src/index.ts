@@ -4,6 +4,7 @@ import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { OperationResolver } from "./resolvers/OperationResolver";
+import { SchedulingResolver } from "./resolvers/SchedulingResolver";
 
 (async () => {
   const app = express();
@@ -12,7 +13,7 @@ import { OperationResolver } from "./resolvers/OperationResolver";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [OperationResolver]
+      resolvers: [OperationResolver, SchedulingResolver]
     }),
     context: ({ req, res }) => ({ req, res })
   });

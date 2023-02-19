@@ -23,4 +23,8 @@ export class Quiz extends BaseEntity {
     @Field()
     @Column()
     body: string;
+
+    @Field(() => Int)
+    @Column("int")
+    classID: number;
 }

@@ -20,7 +20,7 @@ export class Teacher extends BaseEntity {
     @Column("int")
     userid: number;
 
-    @Field(() => [Int])
-    @Column("simple-array")
-    classes: [number];
+    @Field(() => Int!, { nullable: true })
+    @Column("int", { nullable: true })
+    classID: number;
 }

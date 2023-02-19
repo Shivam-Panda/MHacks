@@ -89,8 +89,7 @@ export class OperationResolver {
         const t = await Teacher.create({
             name: input.name,
             userid: input.userid,
-            password: createHash('sha256').update(input.password).digest('base64'),
-            classes: []
+            password: createHash('sha256').update(input.password).digest('base64')
         }).save()
         if(t) {
             const s = await School.findOne({ id: input.school })
@@ -143,8 +142,25 @@ export class OperationResolver {
     async deletePost(
         @Arg("id", () => Int) id: number
     ) {
-        await Post.delete({ id })
-        return true;
+        const p = await Post.findOne({ id })
+        if(p) {
+            const c = await Class.findOne({ id: p.classID })
+            if(c) {
+                let posts: number[] | [number] = c.posts; 
+                posts = posts.filter((val, _) => {
+                    return (val !== id)
+                })
+                await Class.update({
+                    id: p.classID
+                }, {
+                    posts
+                });
+                await Post.delete({ id })
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Mutation(() => Boolean)
@@ -235,10 +251,9 @@ export class OperationResolver {
         if(teachers && students) {
             for(let i = 0; i < teachers.length; i++) {
                 let t = await Teacher.findOne({ id: teachers[i] })
-                let c = t?.classes;
+                let c = t?.classID;
                 if(c) {
-                    for(let j = 0; j < c.length; j++) {
-                        let cs = await Class.findOne({ id: c[i] })
+                        let cs = await Class.findOne({ id: c })
                         const posts = cs?.posts;
                         const assignments = cs?.assignments;
                         const quizzes = cs?.quizzes;
@@ -259,8 +274,7 @@ export class OperationResolver {
                                 }
                                 await Quiz.delete({ id: quizzes[k] })
                             }
-                        }
-                        await Class.delete({ id: c[i] })
+                        await Class.delete({ id: c })
                     }
                 }
                 await Teacher.delete({ id: t?.id })

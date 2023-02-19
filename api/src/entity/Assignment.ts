@@ -23,4 +23,8 @@ export class Assignment extends BaseEntity {
     @Field(() => [Int])
     @Column("simple-array")
     submissions: [number];
+
+    @Field(() => Int)
+    @Column("int")
+    classID: number;
 }

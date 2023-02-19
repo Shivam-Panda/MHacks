@@ -15,4 +15,8 @@ export class Post extends BaseEntity {
     @Field()
     @Column()
     body: string;
+
+    @Field(() => Int)
+    @Column("int")
+    classID: number;
 }
