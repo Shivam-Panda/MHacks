@@ -1,33 +1,68 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from "react";
+import { tokenToString } from 'typescript';
 import './component.css';
 
-//import { Configuration, OpenAIApi } from "openai";
-//const configuration = new Configuration({
-//    organization: "org-1gnCAjr84jIVS6pho8agKwZu",
-//    apiKey: process.env.OPENAI_API_KEY,
-//});
-//const openai = new OpenAIApi(configuration);
-//const response = await openai.listEngines();
-
-useEffect(()=> {
-  document.addEventListener('keydown', detectKeyDown, true)
-})
-const detectKeyDown = (ev: any) => {
-  console.log("Clicked Key:", ev.key)
+import { Configuration, OpenAIApi } from "openai";
+import { Tab } from '@mui/material';
+  const configuration = new Configuration({
+   organization: "org-1gnCAjr84jIVS6pho8agKwZu",
+   apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+const response = async() => {
+  await openai.listEngines();
 }
+
+
 const Studentview = () => {
-  const [txt, setEmail] = useState('');
+
+  const [message, setMessage] = useState('')
+
+  const [updated, setUpdated] = useState(message)
+
+  const [txt, setText] = useState('');
+
   const [state, setState] = useState('');
+  const detectKeyDown = (ev: any) => {
+    const TabCheck = ev.key;
+    if (TabCheck === "0")
+    getMessage() 
+  }
+
+  const getMessage = () => {
+    const msg = setUpdated(message)
+    console.log(msg)
+  }
+/* Open AI integration.
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+const response =  async(msg: any) => {await openai.createCompletion({
+  model: "text-davinci-003",
+  prompt: msg,
+  max_tokens: 1000,
+  temperature: 0,
+})};
+*/
+
+
+  useEffect(()=> {
+    document.addEventListener('keydown', detectKeyDown, true)
+  })
+
+  useEffect(()=> {
+    document.addEventListener('keydown', detectKeyDown, true)
+  })
+
+
   const fetchApi = (txt: any) => {
     return "token";
-  }
-  const handler = (event: any) => {
-    // changing the state to the name of the key
-  // which is pressed
-  setState(event.key);
-};
+    }
+
   return (
     <>
      <Box
@@ -40,11 +75,13 @@ const Studentview = () => {
     />
     <div>
     <div className='Text_Entry'>
-    <input id="input"></input>
+    <input id="input" defaultValue={message}/>
     <Button variant="outlined" onClick={(e) => {// je crois en toi
       sessionStorage.setItem('token', fetchApi(txt));}}>Submit</Button>
     </div>
+    
     </div>
+
     </>
   )
 }

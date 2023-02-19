@@ -1,25 +1,36 @@
-.Nav{
-    background-color: #13c4a3;
-    overflow: hidden;
-    min-height: 15vh;
-    min-width: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  #nav{
-    list-style: none;
-    display: inline;
-  }
-  #nav a {
-    color: #4c6085;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 5vh;
-  }
-  #nav a:hover {
-    background-color: #c0e5c8;
-    color: #32322c;
-  }
-  .li{
-    float: left;
-  }
+li{
+  list-style-type: none;
+  float: left;
+}
+ul{
+  list-style-type: none;
+  margin: 0;
+}
+a{
+  text-decoration: none;
+
+}
+.navdiv{
+  display: flex;
+  min-height: 10vh;
+  align-items: center;
+  width: 100%;
+  background-color: aliceblue;
+  overflow: hidden;
+}
+#title{
+  text-transform: uppercase;
+  color: rgb(208, 193, 249);
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 5vh;
+  padding: 3vh;
+  overflow: hidden;
+}
+#element{
+  text-transform: uppercase;
+  color: rgb(208, 193, 249);
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 5vh;
+  padding: 3vh;
+  overflow: hidden;
+}
