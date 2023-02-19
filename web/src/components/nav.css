@@ -1,36 +1,32 @@
-li{
-  list-style-type: none;
-  float: left;
+.nav {
+  background-color: cadetblue;
+  width: 100%;
+  height: 30vh;
+ }
+ .ul {
+   list-style-type: none;
+   margin: 0;
+   overflow: hidden;
+   background-color: cadetblue;
+   width: 100%;
+ }
+ .li{
+  width: 100%;
+  display: inline;
+ 
 }
-ul{
-  list-style-type: none;
-  margin: 0;
+.li a {
+  display: inline;
+  padding: 1%;
+  font-size: 200%;
+  text-align: center;
 }
-a{
-  text-decoration: none;
+
+.li a:hover{
+  background-color: #065352;
+  transition-duration: 1000ms;
 
 }
-.navdiv{
-  display: flex;
-  min-height: 10vh;
-  align-items: center;
-  width: 100%;
-  background-color: aliceblue;
-  overflow: hidden;
-}
-#title{
-  text-transform: uppercase;
-  color: rgb(208, 193, 249);
-  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-  font-size: 5vh;
-  padding: 3vh;
-  overflow: hidden;
-}
-#element{
-  text-transform: uppercase;
-  color: rgb(208, 193, 249);
-  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-  font-size: 5vh;
-  padding: 3vh;
-  overflow: hidden;
+.active {
+  background-color: #04AA6D;
 }

@@ -6,22 +6,20 @@ interface Props {
 }
 
 const nav = (props: Props) => {
-  return (
-    <>  
-    <div className='Nav'>
-      <ul className='navdiv'>  
+  return ( 
+    <div className='nav'>
+      <ul>  
         <li>
-          <p id="title" onClick={() => props.setPage(Pages.HOME)}>OpenDesk</p>
+          <a className='title' onClick={() => props.setPage(Pages.HOME)}>OpenDesk</a>
         </li>
         <li>
-          <p id="element" onClick={() => props.setPage(Pages.LOGIN)}>Login</p>
+          <a className='element'onClick={() => props.setPage(Pages.LOGIN)}>Login</a>
         </li>
         <li>
-          <p id="element" onClick={() => props.setPage(Pages.STUDENTVIEW)}>Studentview</p>
+          <a id='element' onClick={() => props.setPage(Pages.STUDENTVIEW)}>Studentview</a>
         </li>
       </ul>
     </div>
-    </>
   )
 }
 
