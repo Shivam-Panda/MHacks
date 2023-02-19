@@ -1,3 +1,5 @@
+import { A_Submission } from "src/entity/A_Submission";
+import { Q_Submission } from "src/entity/Q_Submission";
 import { Arg, Field, InputType, Int, Mutation, Resolver } from "type-graphql";
 import { Assignment } from "../entity/Assignment";
 import { Class } from "../entity/Class";
@@ -72,6 +74,30 @@ class CreateQuestionInput {
     choices?: [string]
 }
 
+@InputType()
+class GradeAssignmentInput {
+    @Field()
+    token: string;
+
+    @Field(() => Int)
+    assignmentID: number
+
+    @Field(() => Int)
+    grade: number
+}
+
+@InputType()
+class QuizInput {
+    @Field()
+    token: string;
+
+    @Field(() => Int)// hey bb, how you doin?
+    submissionID: number;
+
+    @Field(() => Int)
+    grade: number;
+}
+
 @Resolver()
 export class TeacherResolver {
     @Mutation(() => Boolean)
@@ -138,5 +164,36 @@ export class TeacherResolver {
             return null;
         }
         return null;
+    }
+
+    @Mutation(() => Boolean, { nullable: true })
+    async gradeAssignment(@Arg("input", () => GradeAssignmentInput) input: GradeAssignmentInput) {
+        const teacher = await Teacher.findOne({ password: input.token });
+        const assignment = await A_Submission.findOne({ id: input.assignmentID })
+        if(teacher && assignment) {
+            await A_Submission.update({
+                id: input.assignmentID
+            }, {
+                grade: input.grade
+            });
+            return true;
+        } 
+        return false;
+    }
+
+    @Mutation(() => Boolean, { nullable: true })
+    async overrideQuiz(@Arg("input", () => QuizInput) input: QuizInput) {
+        const teacher = await Teacher.findOne({ password: input.token })
+        const submission = await Q_Submission.findOne({ id: input.submissionID })
+        if(teacher && submission) {
+            await Q_Submission.update({
+                id: input.submissionID
+            }, {
+                grade: input.grade
+            });
+            return true;
+        } else {
+            return false;
+        }
     }
 }
